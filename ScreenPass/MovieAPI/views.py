@@ -11,7 +11,12 @@ from .models import Movie, Show, Booking
 from .serializers import (UserSerializer, MovieSerializer, ShowSerializer, 
                           BookingSerializer, BookingCreateSerializer)
 from django.contrib.auth.models import User
+from django.http import HttpResponse
+from .utils import html_content
 # Create your views here.
+
+def index(request):
+    return HttpResponse(html_content, content_type="text/html")
 
 class SignupView(CreateAPIView):
     queryset = User.objects.all()
@@ -54,7 +59,7 @@ def book_seat(request, id):
     seat_number = serializer.validated_data['seat_number']
     show = get_object_or_404(Show, id=id)
     
-    if seat_number < 1 or seat_number > show.total_seats:
+    if seat_number > show.total_seats:
         return Response({"error": "Invalid seat number."}, status=status.HTTP_400_BAD_REQUEST)
     
     try:
